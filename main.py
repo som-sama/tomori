@@ -5,9 +5,16 @@ import openai
 import discord
 import time
 from discord.ext import commands
+import asyncio
 
 load_dotenv()
 bot_token = os.getenv("BOT_TOKEN")
+# host = os.getenv("DB_HOST")
+# user = os.getenv("DB_USER")
+# password = os.getenv("DB_PASSWORD")
+# database = os.getenv("DB_NAME")
+
+
 
 intents = discord.Intents.default()
 intents.typing = False
@@ -26,24 +33,32 @@ from personality import personality
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Store the chat history
 chat_history = {}
 
+
+
 def generate_response(user, query):
-    # Convert the identity and behavior into a single string with all the details
+
     identity_info = ' '.join(personality['identity'] + personality['behavior'])
     
-    # Use that identity information as part of the prompt
+
     prompt = f"I am {personality['name']} ({personality['byline']}). {identity_info}\nQ: {query}\nA:"
 
-    if "who is your bf?" in query.lower() or "who is your boyfriend?" in query.lower():
-        return "Som"
+    if "hello" in query.lower():
+        return " "
+    elif "remind" in query.lower():
+        return ""
+    elif "hm" in query.lower():
+        return "You look lonely. I can fix that.."
+    elif "what will you do if I vanish someday" in query.lower():
+        return "I wont let you go. I will hold you tight and even fight the gods if I have to. I love you."
+  
     while True:
         try:
             response = openai.Completion.create(
                 engine="text-davinci-003",
                 prompt=prompt,
-                max_tokens=50,
+                max_tokens=100,
                 n=1,
                 stop=None,
                 temperature=0.7,
@@ -78,6 +93,12 @@ async def on_command_error(ctx, error):
 async def hello(ctx):
     response = random.choice(responses)
     await ctx.send(response)
+
+@bot.command(name="remind")
+async def remind(ctx, duration: int, *, reminder: str):
+    await ctx.send(f"Aight babe, I will remind you to '{reminder}' after {duration} seconds.")
+    await asyncio.sleep(duration)
+    await ctx.send(f"Babe!! Reminder: {ctx.author.mention}, you asked me to remind you to '{reminder}'.")
 
 @bot.event
 async def on_message(message):
