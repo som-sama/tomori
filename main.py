@@ -6,6 +6,7 @@ import discord
 import time
 from discord.ext import commands
 import asyncio
+import datetime
 
 load_dotenv()
 bot_token = os.getenv("BOT_TOKEN")
@@ -35,7 +36,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 chat_history = {}
 
-
+reminder_end_time = None
 
 def generate_response(user, query):
 
@@ -47,6 +48,8 @@ def generate_response(user, query):
     if "hello" in query.lower():
         return " "
     elif "remind" in query.lower():
+        return ""
+    elif "time" in query.lower():
         return ""
     elif "hm" in query.lower():
         return "You look lonely. I can fix that.."
@@ -94,12 +97,43 @@ async def hello(ctx):
     response = random.choice(responses)
     await ctx.send(response)
 
+# @bot.command(name="remind")
+# async def remind(ctx, duration: int, *, reminder: str):
+#     duration_seconds = duration * 3600
+#     await ctx.send(f"Aight babe, I will remind you to '{reminder}' after {duration} hours.")
+#     await asyncio.sleep(duration_seconds)
+#     await ctx.send(f"Babe!! Reminder: {ctx.author.mention}, you asked me to remind you to '{reminder}'.")
+
+
+
 @bot.command(name="remind")
 async def remind(ctx, duration: int, *, reminder: str):
+    global reminder_end_time
+    
+    # Convert hours to seconds
     duration_seconds = duration * 3600
+    
+    now = datetime.datetime.now()
+    reminder_end_time = now + datetime.timedelta(seconds=duration_seconds)
+    
     await ctx.send(f"Aight babe, I will remind you to '{reminder}' after {duration} hours.")
     await asyncio.sleep(duration_seconds)
     await ctx.send(f"Babe!! Reminder: {ctx.author.mention}, you asked me to remind you to '{reminder}'.")
+
+@bot.command(name="time")
+async def time_left(ctx):
+    global reminder_end_time
+    
+    if reminder_end_time is None:
+        await ctx.send("No reminder is set.")
+    else:
+        remaining_time = reminder_end_time - datetime.datetime.now()
+        remaining_hours = int(remaining_time.total_seconds() / 3600)
+        remaining_minutes = int((remaining_time.total_seconds() % 3600) / 60)
+        remaining_seconds = int(remaining_time.total_seconds() % 60)
+        await ctx.send(f"Time left for the reminder: {remaining_hours} hours, {remaining_minutes} minutes, {remaining_seconds} seconds.")
+
+
 
 @bot.event
 async def on_message(message):
