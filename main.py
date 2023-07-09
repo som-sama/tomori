@@ -96,8 +96,9 @@ async def hello(ctx):
 
 @bot.command(name="remind")
 async def remind(ctx, duration: int, *, reminder: str):
-    await ctx.send(f"Aight babe, I will remind you to '{reminder}' after {duration} seconds.")
-    await asyncio.sleep(duration)
+    duration_seconds = duration * 3600
+    await ctx.send(f"Aight babe, I will remind you to '{reminder}' after {duration} hours.")
+    await asyncio.sleep(duration_seconds)
     await ctx.send(f"Babe!! Reminder: {ctx.author.mention}, you asked me to remind you to '{reminder}'.")
 
 @bot.event
