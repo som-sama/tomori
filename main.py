@@ -15,8 +15,6 @@ bot_token = os.getenv("BOT_TOKEN")
 # password = os.getenv("DB_PASSWORD")
 # database = os.getenv("DB_NAME")
 
-
-
 intents = discord.Intents.default()
 intents.typing = False
 intents.presences = False
@@ -80,8 +78,6 @@ def generate_response(user, query):
             print(f"Rate limit exceeded, sleeping for 60 seconds")
             time.sleep(60)
 
-
-
 @bot.event
 async def on_ready():
     print(f"Tomori is online. Logged in as {bot.user.name} ({bot.user.id})")
@@ -96,15 +92,6 @@ async def on_command_error(ctx, error):
 async def hello(ctx):
     response = random.choice(responses)
     await ctx.send(response)
-
-# @bot.command(name="remind")
-# async def remind(ctx, duration: int, *, reminder: str):
-#     duration_seconds = duration * 3600
-#     await ctx.send(f"Aight babe, I will remind you to '{reminder}' after {duration} hours.")
-#     await asyncio.sleep(duration_seconds)
-#     await ctx.send(f"Babe!! Reminder: {ctx.author.mention}, you asked me to remind you to '{reminder}'.")
-
-
 
 @bot.command(name="remind")
 async def remind(ctx, duration: int, *, reminder: str):
@@ -151,6 +138,12 @@ async def on_message(message):
     
     ai_response = generate_response(str(message.author), message.content)
     await message.channel.send(ai_response)
+
+     # Checking if the response is not empty or only whitespace
+    if ai_response.strip(): 
+        await message.channel.send(ai_response)
+    else:
+        print("Empty AI response")
 
 bot.run(bot_token)
 
