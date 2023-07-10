@@ -7,6 +7,7 @@ import time
 from discord.ext import commands
 import asyncio
 import datetime
+import pytz
 
 load_dotenv()
 bot_token = os.getenv("BOT_TOKEN")
@@ -51,8 +52,14 @@ def generate_response(user, query):
         return ""
     elif "hm" in query.lower():
         return "You look lonely. I can fix that.."
-    elif "what will you do if I vanish someday" in query.lower():
+    elif "what will you     do if I vanish someday" in query.lower():
         return "I wont let you go. I will hold you tight and even fight the gods if I have to. I love you."
+    # elif "whats the time?" in query.lower():
+    #     current_time = datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%H.%M.%S")
+    #     return f"Uhm, its {current_time} right now."
+    elif "whats the date today?" in query.lower():
+        current_date = datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%d/%m/%Y")
+        return f"The date is {current_date} today."
   
     while True:
         try:
@@ -92,7 +99,10 @@ async def on_command_error(ctx, error):
 async def hello(ctx):
     response = random.choice(responses)
     await ctx.send(response)
-
+@bot.command(name='time')
+async def time(ctx):
+    current_time = datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%I:%M %p")
+    await ctx.send(f"Uhm, its {current_time} now.")
 @bot.command(name="remind")
 async def remind(ctx, duration: int, *, reminder: str):
     global reminder_end_time
@@ -107,7 +117,7 @@ async def remind(ctx, duration: int, *, reminder: str):
     await asyncio.sleep(duration_seconds)
     await ctx.send(f"Babe!! Reminder: {ctx.author.mention}, you asked me to remind you to '{reminder}'.")
 
-@bot.command(name="time")
+@bot.command(name="left")
 async def time_left(ctx):
     global reminder_end_time
     
