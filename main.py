@@ -136,24 +136,23 @@ async def time_left(ctx):
 async def on_message(message):
     if message.author == bot.user:
         return 
+        
+    if not message.content.startswith('-'): # check if the message starts with command prefix
+        # Save the user's message in the chat history
+        if str(message.author) not in chat_history:
+            chat_history[str(message.author)] = []
+        chat_history[str(message.author)].append({"role": "user", "content": message.content})
+        
+        ai_response = generate_response(str(message.author), message.content)
+
+        # Checking if the response is not empty or only whitespace
+        if ai_response.strip(): 
+            await message.channel.send(ai_response)
+        else:
+            print("Empty AI response")
+
     await bot.process_commands(message)
 
-    # if random.random() < 0.2:
-    #     await message.channel.send(random.choice(personality["behavior"]))
-    
-    # Save the user's message in the chat history
-    if str(message.author) not in chat_history:
-        chat_history[str(message.author)] = []
-    chat_history[str(message.author)].append({"role": "user", "content": message.content})
-    
-    ai_response = generate_response(str(message.author), message.content)
-    await message.channel.send(ai_response)
-
-     # Checking if the response is not empty or only whitespace
-    if ai_response.strip(): 
-        await message.channel.send(ai_response)
-    else:
-        print("Empty AI response")
 
 bot.run(bot_token)
 
