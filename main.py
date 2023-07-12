@@ -41,8 +41,21 @@ def generate_response(user, query):
 
     identity_info = ' '.join(personality['identity'] + personality['behavior'])
     
+    if user in chat_history:
+        # getting history
+        history = chat_history[user]
 
-    prompt = f"I am {personality['name']} ({personality['byline']}). {identity_info}\nQ: {query}\nA:"
+        # Generate the prompt based on the history
+        prompt = f"I am {personality['name']} ({personality['byline']}). {identity_info}\n"
+        for entry in history:
+            prompt += f"{entry['role']}: {entry['content']}\n"
+
+        # Add the user's current query to the prompt
+        prompt += f"Q: {query}\nA:"
+        
+    else:
+        # If there's no history, use the original prompt format
+        prompt = f"I am {personality['name']} ({personality['byline']}). {identity_info}\nQ: {query}\nA:"
 
     if "hello" in query.lower():
         return " "
