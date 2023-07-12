@@ -147,11 +147,23 @@ async def on_message(message):
 
         # Checking if the response is not empty or only whitespace
         if ai_response.strip(): 
-            await message.channel.send(ai_response)
+            if ('python program' in message.content.lower() or 
+                'python script' in message.content.lower()):
+                # Python formatting
+                formatted_response = f"```python\n{ai_response}\n```"
+                await message.channel.send(formatted_response)
+            elif ('go program' in message.content.lower()):
+                # Go formatting
+                formatted_response = f"```go\n{ai_response}\n```"
+                await message.channel.send(formatted_response)
+            else:
+                await message.channel.send(ai_response)
+           
         else:
             print("Empty AI response")
 
     await bot.process_commands(message)
+
 
 
 bot.run(bot_token)
