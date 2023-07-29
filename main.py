@@ -11,23 +11,12 @@ import pytz
 
 load_dotenv()
 bot_token = os.getenv("BOT_TOKEN")
-# host = os.getenv("DB_HOST")
-# user = os.getenv("DB_USER")
-# password = os.getenv("DB_PASSWORD")
-# database = os.getenv("DB_NAME")
 
 intents = discord.Intents.default()
 intents.typing = False
 intents.presences = False
 
 bot = commands.Bot(command_prefix="-", intents=intents)
-
-responses = [
-    "Hey to my irl Zoro <3",
-    "Wassup my batman?",
-    "Yo my love",
-    "Hello Hello MR!! How was the day?"
-]
 
 from personality import personality 
 
@@ -38,7 +27,6 @@ chat_history = {}
 reminder_end_time = None
 
 def generate_response(user, query):
-
     identity_info = ' '.join(personality['identity'] + personality['behavior'])
     
     if user in chat_history:
@@ -54,32 +42,15 @@ def generate_response(user, query):
         prompt += f"Q: {query}\nA:"
         
     else:
-        # If there's no history, use the original prompt format
+        # If there's no history, use a default prompt
         prompt = f"I am {personality['name']} ({personality['byline']}). {identity_info}\nQ: {query}\nA:"
 
-    if "hello" in query.lower():
-        return " "
-    elif "remind" in query.lower():
-        return ""
-    elif "time" in query.lower():
-        return ""
-    elif "hm" in query.lower():
-        return "You look lonely. I can fix that.."
-    elif "what will you     do if I vanish someday" in query.lower():
-        return "I wont let you go. I will hold you tight and even fight the gods if I have to. I love you."
-    # elif "whats the time?" in query.lower():
-    #     current_time = datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%H.%M.%S")
-    #     return f"Uhm, its {current_time} right now."
-    elif "whats the date today?" in query.lower():
-        current_date = datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%d/%m/%Y")
-        return f"The date is {current_date} today."
-  
     while True:
         try:
             response = openai.Completion.create(
                 engine="text-davinci-003",
                 prompt=prompt,
-                max_tokens=100,
+                max_tokens=400,
                 n=1,
                 stop=None,
                 temperature=0.7,
@@ -98,6 +69,7 @@ def generate_response(user, query):
             print(f"Rate limit exceeded, sleeping for 60 seconds")
             time.sleep(60)
 
+
 @bot.event
 async def on_ready():
     print(f"Tomori is online. Logged in as {bot.user.name} ({bot.user.id})")
@@ -108,14 +80,6 @@ async def on_command_error(ctx, error):
         return
     raise error
 
-@bot.command(name='hello')
-async def hello(ctx):
-    response = random.choice(responses)
-    await ctx.send(response)
-@bot.command(name='time')
-async def time(ctx):
-    current_time = datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%I:%M %p")
-    await ctx.send(f"Uhm, its {current_time} now.")
 @bot.command(name="remind")
 async def remind(ctx, duration: int, *, reminder: str):
     global reminder_end_time
@@ -126,9 +90,9 @@ async def remind(ctx, duration: int, *, reminder: str):
     now = datetime.datetime.now()
     reminder_end_time = now + datetime.timedelta(seconds=duration_seconds)
     
-    await ctx.send(f"Aight babe, I will remind you to '{reminder}' after {duration} hours.")
+    await ctx.send(f"Aight Som, I will remind you to '{reminder}' after {duration} hours.")
     await asyncio.sleep(duration_seconds)
-    await ctx.send(f"Babe!! Reminder: {ctx.author.mention}, you asked me to remind you to '{reminder}'.")
+    await ctx.send(f"Som!! Reminder: {ctx.author.mention}, you asked me to remind you to '{reminder}'.")
 
 @bot.command(name="left")
 async def time_left(ctx):
@@ -165,7 +129,7 @@ async def on_message(message):
                 # Python formatting
                 formatted_response = f"```python\n{ai_response}\n```"
                 await message.channel.send(formatted_response)
-            elif ('go program' in message.content.lower()):
+            elif ('go program' in message.content.lower()) or 'golang program' in message.content.lower():
                 # Go formatting
                 formatted_response = f"```go\n{ai_response}\n```"
                 await message.channel.send(formatted_response)
@@ -173,11 +137,9 @@ async def on_message(message):
                 await message.channel.send(ai_response)
            
         else:
-            print("Empty AI response")
+            print("Empty AI repsonse")
 
-    await bot.process_commands(message)
-
-
+        await bot.process_commands(message)
 
 bot.run(bot_token)
 
