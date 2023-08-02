@@ -23,10 +23,10 @@ git clone https://github.com/your-username/tomori-discord-bot.git
 1. Navigate to the project directory.
 
 ```bash
-cd tomori-discord-bot
+cd <project-name>
 ```
 
-2. Install the required dependencies using `pip`.
+2. Install the required dependencies(if any) using `pip`.
 
 ```bash
 pip install -r requirements.txt
