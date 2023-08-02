@@ -117,12 +117,11 @@ async def on_message(message):
     if not message.content.startswith('-'): # check if the message starts with command prefix
         # Save the user's message in the chat history
         if str(message.author) not in chat_history:
-            chat_history[str(message.author)] = []
+            chat_history[str(message.author)] = []  
         chat_history[str(message.author)].append({"role": "user", "content": message.content})
         
         ai_response = generate_response(str(message.author), message.content)
 
-        # Checking if the response is not empty or only whitespace
         if ai_response.strip(): 
             if ('python program' in message.content.lower() or 
                 'python script' in message.content.lower()):
@@ -139,7 +138,7 @@ async def on_message(message):
         else:
             print("Empty AI repsonse")
 
-        await bot.process_commands(message)
+    await bot.process_commands(message)
 
 bot.run(bot_token)
 
